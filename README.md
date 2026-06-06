@@ -25,36 +25,38 @@ El proyecto usa PostgreSQL + PostGIS normal. No usa `postgis_topology`.
 
 ```text
 ladm-col-sinic-webgis-bde/
-├── backend/
-│   ├── app/
-│   │   ├── main.py
-│   │   ├── database.py
-│   │   ├── config.py
-│   │   ├── models/
-│   │   ├── schemas/
-│   │   ├── routers/
-│   │   └── services/
-│   ├── Pipfile
-│   ├── .env.example
-│   └── README.md
-├── frontend/
-│   ├── index.html
-│   ├── package.json
-│   ├── vite.config.js
-│   ├── .env.example
-│   └── src/
-├── database/
-│   ├── 01_create_extensions_and_schemas.sql
-│   ├── 02_create_tables.sql
-│   ├── 03_seed_data.sql
-│   └── README.md
-├── backup/
-│   └── README.md
-├── docs/
-│   ├── informe_preparacion_bd.tex
-│   └── modelo_datos.md
-├── .gitignore
-└── README.md
+|-- backend/
+|   |-- app/
+|   |   |-- main.py
+|   |   |-- database.py
+|   |   |-- config.py
+|   |   |-- models/
+|   |   |-- schemas/
+|   |   |-- routers/
+|   |   `-- services/
+|   |-- Pipfile
+|   |-- Pipfile.lock
+|   |-- .env.example
+|   `-- README.md
+|-- frontend/
+|   |-- index.html
+|   |-- package.json
+|   |-- package-lock.json
+|   |-- vite.config.js
+|   |-- .env.example
+|   `-- src/
+|-- database/
+|   |-- 01_create_extensions_and_schemas.sql
+|   |-- 02_create_tables.sql
+|   |-- 03_seed_data.sql
+|   `-- README.md
+|-- backup/
+|   `-- README.md
+|-- docs/
+|   |-- informe_preparacion_bd.tex
+|   `-- modelo_datos.md
+|-- .gitignore
+`-- README.md
 ```
 
 ## Requisitos previos
@@ -94,6 +96,17 @@ GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA ladm_sinic TO sinic_app;
 
 ## Configuracion del backend
 
+Comandos recomendados en Windows PowerShell:
+
+```powershell
+cd backend
+py -m pipenv install
+Copy-Item .env.example .env
+py -m pipenv run uvicorn app.main:app --reload
+```
+
+Si `pipenv` esta disponible directamente en tu terminal, tambien puedes usar:
+
 ```bash
 cd backend
 pipenv install
@@ -101,30 +114,25 @@ cp .env.example .env
 pipenv run uvicorn app.main:app --reload
 ```
 
-En Windows PowerShell:
-
-```powershell
-cd backend
-pipenv install
-Copy-Item .env.example .env
-pipenv run uvicorn app.main:app --reload
-```
+En macOS/Linux, si `python` no apunta a Python 3, usa `python3 -m pipenv`.
 
 ## Configuracion del frontend
 
-```bash
-cd frontend
-npm install
-cp .env.example .env
-npm run dev
-```
-
-En Windows PowerShell:
+Comandos recomendados en Windows PowerShell:
 
 ```powershell
 cd frontend
 npm install
 Copy-Item .env.example .env
+npm run dev
+```
+
+En macOS/Linux:
+
+```bash
+cd frontend
+npm install
+cp .env.example .env
 npm run dev
 ```
 
@@ -134,6 +142,30 @@ npm run dev
 - Documentacion Swagger: http://localhost:8000/docs
 - Health check: http://localhost:8000/health
 - Frontend: http://localhost:5173
+
+## Verificacion rapida
+
+Con backend y frontend en ejecucion, puedes comprobar la API desde PowerShell:
+
+```powershell
+Invoke-WebRequest -Uri "http://127.0.0.1:8000/health" -UseBasicParsing
+Invoke-WebRequest -Uri "http://127.0.0.1:8000/api/interesados" -UseBasicParsing
+Invoke-WebRequest -Uri "http://127.0.0.1:8000/api/unidades-administrativas" -UseBasicParsing
+Invoke-WebRequest -Uri "http://127.0.0.1:8000/api/derechos-interesados" -UseBasicParsing
+Invoke-WebRequest -Uri "http://127.0.0.1:8000/api/unidades-espaciales" -UseBasicParsing
+Invoke-WebRequest -Uri "http://127.0.0.1:8000/api/topografia-representacion" -UseBasicParsing
+Invoke-WebRequest -Uri "http://127.0.0.1:8000/api/cartografia-catastral" -UseBasicParsing
+```
+
+Para validar compilacion local:
+
+```powershell
+cd backend
+py -m pipenv run python -m compileall app
+
+cd ../frontend
+npm run build
+```
 
 ## Secciones del frontend
 
