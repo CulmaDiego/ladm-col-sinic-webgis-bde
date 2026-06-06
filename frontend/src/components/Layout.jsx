@@ -7,7 +7,7 @@ export default function Layout({ children }) {
       <main className="app-main">{children}</main>
       <footer className="app-footer">
         <span>LADM_COL SINIC WebGIS BDE</span>
-        <span>PostgreSQL + PostGIS EPSG:9377</span>
+        <span>PostgreSQL + PostGIS | EPSG:9377 | LADM_COL SINIC</span>
       </footer>
     </div>
   );

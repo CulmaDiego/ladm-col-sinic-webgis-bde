@@ -29,8 +29,13 @@ export default function Navbar() {
   return (
     <header className="navbar">
       <NavLink to="/" className="brand" title="Inicio">
-        <Database size={24} aria-hidden="true" />
-        <span>LADM_COL SINIC</span>
+        <span className="brand-mark">
+          <Database size={22} aria-hidden="true" />
+        </span>
+        <span className="brand-text">
+          <strong>LADM_COL SINIC</strong>
+          <small>WebGIS BDE</small>
+        </span>
       </NavLink>
 
       <nav className="nav-scroll" aria-label="Navegacion principal">

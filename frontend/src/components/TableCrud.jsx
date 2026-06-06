@@ -1,10 +1,15 @@
 import {
   AlertCircle,
+  Braces,
   CheckCircle2,
+  Database,
+  FileText,
+  Layers,
   Pencil,
   Plus,
   RefreshCw,
   Save,
+  Search,
   Trash2,
   X,
 } from "lucide-react";
@@ -63,13 +68,40 @@ export default function TableCrud({ config }) {
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const loadRows = async () => {
+  const filteredRows = useMemo(() => {
+    const normalizedTerm = searchTerm.trim().toLowerCase();
+    if (!normalizedTerm) {
+      return rows;
+    }
+
+    return rows.filter((row) =>
+      config.tableColumns.some((column) =>
+        displayValue(row[column.key]).toLowerCase().includes(normalizedTerm),
+      ),
+    );
+  }, [config.tableColumns, rows, searchTerm]);
+
+  const populatedCount = useMemo(() => {
+    if (rows.length === 0) {
+      return 0;
+    }
+
+    return rows.reduce((count, row) => {
+      const hasCoreData = config.keyFields?.some((field) => row[field]);
+      return hasCoreData ? count + 1 : count;
+    }, 0);
+  }, [config.keyFields, rows]);
+
+  const loadRows = async ({ preserveMessage = false } = {}) => {
     setLoading(true);
     try {
       const response = await api.get(config.endpoint);
       setRows(response.data);
-      setMessage(null);
+      if (!preserveMessage) {
+        setMessage(null);
+      }
     } catch (error) {
       setMessage({ type: "error", text: getErrorMessage(error) });
     } finally {
@@ -106,7 +138,7 @@ export default function TableCrud({ config }) {
         setMessage({ type: "success", text: "Registro creado." });
       }
       resetForm();
-      await loadRows();
+      await loadRows({ preserveMessage: true });
     } catch (error) {
       setMessage({ type: "error", text: getErrorMessage(error) });
     }
@@ -135,7 +167,7 @@ export default function TableCrud({ config }) {
     try {
       await api.delete(`${config.endpoint}/${id}`);
       setMessage({ type: "success", text: "Registro eliminado." });
-      await loadRows();
+      await loadRows({ preserveMessage: true });
     } catch (error) {
       setMessage({ type: "error", text: getErrorMessage(error) });
     }
@@ -145,12 +177,12 @@ export default function TableCrud({ config }) {
     <section className="crud-page">
       <div className="page-heading">
         <div>
-          <p className="eyebrow">CRUD academico</p>
-          <h1>{config.title}</h1>
+          <p className="eyebrow">Modulo CRUD academico</p>
+          <h1>{config.pageTitle || config.title}</h1>
           <p>{config.subtitle}</p>
         </div>
         <button
-          className="button secondary"
+          className="btn btn-secondary"
           type="button"
           onClick={loadRows}
           title="Actualizar datos"
@@ -158,6 +190,37 @@ export default function TableCrud({ config }) {
           <RefreshCw size={18} aria-hidden="true" />
           Actualizar
         </button>
+      </div>
+
+      <div className="stat-grid compact">
+        <article className="stat-card">
+          <Database size={20} aria-hidden="true" />
+          <div>
+            <span>Tabla PostgreSQL</span>
+            <strong>{config.tableName}</strong>
+          </div>
+        </article>
+        <article className="stat-card">
+          <FileText size={20} aria-hidden="true" />
+          <div>
+            <span>Tipo de informacion</span>
+            <strong>{config.infoType}</strong>
+          </div>
+        </article>
+        <article className="stat-card">
+          <Layers size={20} aria-hidden="true" />
+          <div>
+            <span>Registros cargados</span>
+            <strong>{loading ? "Cargando" : rows.length}</strong>
+          </div>
+        </article>
+        <article className="stat-card">
+          <CheckCircle2 size={20} aria-hidden="true" />
+          <div>
+            <span>Datos con campos clave</span>
+            <strong>{populatedCount}</strong>
+          </div>
+        </article>
       </div>
 
       {message && (
@@ -171,47 +234,84 @@ export default function TableCrud({ config }) {
         </div>
       )}
 
-      <form className="crud-form" onSubmit={handleSubmit}>
-        <div className="form-title">
-          <Plus size={20} aria-hidden="true" />
-          <h2>{editingId ? "Editar registro" : "Crear registro"}</h2>
-        </div>
-        <div className="form-grid">
-          {config.fields.map((field) => (
-            <FormField
-              key={field.name}
-              field={field}
-              value={form[field.name]}
-              onChange={handleChange}
-            />
-          ))}
-        </div>
-        <div className="form-actions">
-          <button className="button primary" type="submit" title="Guardar">
-            <Save size={18} aria-hidden="true" />
-            {editingId ? "Guardar cambios" : "Crear"}
-          </button>
-          {editingId && (
-            <button
-              className="button secondary"
-              type="button"
-              onClick={resetForm}
-              title="Cancelar edicion"
-            >
-              <X size={18} aria-hidden="true" />
-              Cancelar
-            </button>
+      <div className="crud-layout">
+        <form className="form-card" onSubmit={handleSubmit}>
+          <div className="form-title">
+            <Plus size={20} aria-hidden="true" />
+            <div>
+              <h2>{editingId ? "Editar registro" : "Crear registro"}</h2>
+              <p>
+                {editingId
+                  ? "Modifica los campos necesarios y guarda los cambios."
+                  : "Registra un nuevo elemento sin cambiar la estructura de la API."}
+              </p>
+            </div>
+          </div>
+          <div className="form-grid">
+            {config.fields.map((field) => (
+              <FormField
+                key={field.name}
+                field={field}
+                value={form[field.name]}
+                onChange={handleChange}
+              />
+            ))}
+          </div>
+          {config.hasGeometry && (
+            <div className="geometry-help">
+              <Braces size={18} aria-hidden="true" />
+              <div>
+                <strong>Geometria en WKT con SRID EPSG:9377</strong>
+                <p>
+                  Ejemplos: POLYGON((5000000 2000000, 5000010 2000000,
+                  5000010 2000012, 5000000 2000012, 5000000 2000000)) y
+                  POINT(5000005 2000005).
+                </p>
+              </div>
+            </div>
           )}
-        </div>
-      </form>
+          <div className="form-actions">
+            <button className="btn btn-primary" type="submit" title="Guardar">
+              <Save size={18} aria-hidden="true" />
+              {editingId ? "Guardar cambios" : "Crear registro"}
+            </button>
+            {editingId && (
+              <button
+                className="btn btn-secondary"
+                type="button"
+                onClick={resetForm}
+                title="Cancelar edicion"
+              >
+                <X size={18} aria-hidden="true" />
+                Cancelar
+              </button>
+            )}
+          </div>
+        </form>
 
-      <div className="table-panel">
-        <div className="table-header">
-          <h2>Registros</h2>
-          <span>{loading ? "Cargando..." : `${rows.length} registros`}</span>
-        </div>
-        <div className="table-scroll">
-          <table>
+        <div className="table-panel">
+          <div className="table-header">
+            <div>
+              <h2>Registros</h2>
+              <span>
+                {loading
+                  ? "Consultando API..."
+                  : `${filteredRows.length} de ${rows.length} registros`}
+              </span>
+            </div>
+            <label className="search-box" htmlFor={`${config.idField}-search`}>
+              <Search size={17} aria-hidden="true" />
+              <input
+                id={`${config.idField}-search`}
+                type="search"
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                placeholder="Buscar en la tabla"
+              />
+            </label>
+          </div>
+          <div className="table-scroll">
+            <table className="data-table">
             <thead>
               <tr>
                 {config.tableColumns.map((column) => (
@@ -221,14 +321,26 @@ export default function TableCrud({ config }) {
               </tr>
             </thead>
             <tbody>
-              {rows.length === 0 ? (
+              {filteredRows.length === 0 ? (
                 <tr>
                   <td colSpan={config.tableColumns.length + 1}>
-                    No hay registros para mostrar.
+                    <div className="empty-state">
+                      <FileText size={24} aria-hidden="true" />
+                      <strong>
+                        {rows.length === 0
+                          ? "No hay registros para mostrar."
+                          : "No se encontraron coincidencias."}
+                      </strong>
+                      <span>
+                        {rows.length === 0
+                          ? "Crea un registro o verifica la carga desde la API."
+                          : "Ajusta el texto de busqueda para ver mas resultados."}
+                      </span>
+                    </div>
                   </td>
                 </tr>
               ) : (
-                rows.map((row) => (
+                filteredRows.map((row) => (
                   <tr key={row[config.idField]}>
                     {config.tableColumns.map((column) => (
                       <td
@@ -267,7 +379,8 @@ export default function TableCrud({ config }) {
                 ))
               )}
             </tbody>
-          </table>
+            </table>
+          </div>
         </div>
       </div>
     </section>

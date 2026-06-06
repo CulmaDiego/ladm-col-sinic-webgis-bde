@@ -118,6 +118,9 @@ En macOS/Linux, si `python` no apunta a Python 3, usa `python3 -m pipenv`.
 
 ## Configuracion del frontend
 
+El frontend fue desarrollado con React + Vite, usa CSS propio y consume la API
+FastAPI mediante la variable `VITE_API_URL` definida en `frontend/.env`.
+
 Comandos recomendados en Windows PowerShell:
 
 ```powershell

@@ -1,50 +1,137 @@
-import { ArrowRight, Database } from "lucide-react";
+import {
+  ArrowRight,
+  Database,
+  GitBranch,
+  Layers3,
+  Server,
+  Table2,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { entityLinks } from "../data/entityConfigs.js";
 
 const descriptions = {
   Interesados:
-    "Representa personas naturales o juridicas relacionadas con informacion catastral.",
+    "Personas naturales o juridicas vinculadas con informacion catastral.",
   "Unidades Administrativas":
-    "Describe el predio desde su informacion administrativa, economica y de vigencia.",
+    "Predios descritos desde informacion administrativa, economica y de vigencia.",
   "Derechos Interesados":
-    "Relaciona interesados con unidades administrativas y registra el tipo de derecho.",
+    "Vinculos juridicos entre interesados y unidades administrativas.",
   "Unidades Espaciales":
-    "Guarda la geometria del objeto espacial asociado al predio en EPSG:9377.",
+    "Objetos espaciales con geometria PostGIS en EPSG:9377.",
   "Topografia y Representacion":
-    "Registra elementos capturados en campo o por fuentes cartograficas.",
+    "Elementos capturados o representados para apoyar la descripcion espacial.",
   "Cartografia Catastral":
-    "Almacena elementos cartograficos de apoyo como sectores, vias o manzanas.",
+    "Capas complementarias para contexto, soporte y consulta cartografica.",
 };
+
+const technicalItems = [
+  ["Base de datos", "bde_ladm_sinic"],
+  ["Motor", "PostgreSQL + PostGIS"],
+  ["SRID", "EPSG:9377"],
+  ["Schemas", "ladm_sinic, catalogos, auditoria"],
+  ["Backend", "FastAPI"],
+  ["Frontend", "React + Vite"],
+];
+
+const conceptFlow = [
+  "Interesado",
+  "DerechoInteresado",
+  "UnidadAdministrativa",
+  "UnidadEspacial",
+  "TopografiaRepresentacion",
+];
 
 export default function ModeloDatosSINIC() {
   return (
-    <section className="content-page">
-      <div className="page-heading">
+    <section className="page content-page">
+      <div className="hero compact-hero">
         <div>
           <p className="eyebrow">Modelo de datos SINIC</p>
-          <h1>Entidades implementadas</h1>
+          <h1>Modelo de Datos SINIC implementado</h1>
           <p>
-            Vista conceptual de las tablas incluidas en el proyecto y acceso
-            directo a sus formularios CRUD.
+            Estructura simplificada para gestionar informacion catastral
+            mediante entidades administrativas, juridicas y espaciales.
           </p>
         </div>
+        <span className="badge">Panel central de navegacion</span>
       </div>
 
       <div className="model-grid">
         {entityLinks.map((entity) => (
           <article className="model-card" key={entity.to}>
-            <Database size={24} aria-hidden="true" />
+            <div className="card-icon">
+              <Table2 size={24} aria-hidden="true" />
+            </div>
             <h2>{entity.label}</h2>
+            <span className="table-name">{entity.tableName}</span>
             <p>{descriptions[entity.label]}</p>
-            <Link className="button inline" to={entity.to}>
-              Abrir CRUD
+            <div className="field-list">
+              {entity.fields.map((field) => (
+                <span key={field}>{field}</span>
+              ))}
+            </div>
+            <Link className="btn btn-primary" to={entity.to}>
+              Gestionar
               <ArrowRight size={17} aria-hidden="true" />
             </Link>
           </article>
         ))}
       </div>
+
+      <section className="concept-map">
+        <div className="section-heading">
+          <div>
+            <h2>Mapa conceptual del modelo</h2>
+            <p>
+              Relacion principal entre actores, derechos, predios y componentes
+              espaciales.
+            </p>
+          </div>
+        </div>
+        <div className="concept-flow">
+          {conceptFlow.map((item, index) => (
+            <article className="concept-step" key={item}>
+              <GitBranch size={20} aria-hidden="true" />
+              <strong>{item}</strong>
+              {index < conceptFlow.length - 1 && (
+                <span aria-hidden="true">-&gt;</span>
+              )}
+            </article>
+          ))}
+        </div>
+        <div className="support-layer">
+          <Layers3 size={22} aria-hidden="true" />
+          <div>
+            <strong>CartografiaCatastral</strong>
+            <p>Capa de soporte espacial complementario para consulta y contexto.</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="technical-card">
+        <div>
+          <p className="eyebrow">Bloque tecnico</p>
+          <h2>Configuracion implementada</h2>
+          <p>
+            Resumen de plataforma para defender la arquitectura y la conexion
+            espacial del proyecto.
+          </p>
+        </div>
+        <div className="technical-grid">
+          {technicalItems.map(([label, value]) => (
+            <article key={label}>
+              {label === "Backend" ? (
+                <Server size={20} aria-hidden="true" />
+              ) : (
+                <Database size={20} aria-hidden="true" />
+              )}
+              <span>{label}</span>
+              <strong>{value}</strong>
+            </article>
+          ))}
+        </div>
+      </section>
     </section>
   );
 }

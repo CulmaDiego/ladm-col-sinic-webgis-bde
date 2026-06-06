@@ -8,7 +8,10 @@ export default function FormField({ field, value, onChange }) {
   };
 
   return (
-    <label className="form-field" htmlFor={field.name}>
+    <label
+      className={`form-field ${field.type === "textarea" ? "span-wide" : ""}`}
+      htmlFor={field.name}
+    >
       <span>{field.label}</span>
       {field.type === "textarea" ? (
         <textarea {...commonProps} rows={field.rows || 4} />
@@ -28,6 +31,7 @@ export default function FormField({ field, value, onChange }) {
           step={field.type === "number" ? "any" : undefined}
         />
       )}
+      {field.help && <small>{field.help}</small>}
     </label>
   );
 }

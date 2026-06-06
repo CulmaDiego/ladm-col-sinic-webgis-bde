@@ -20,18 +20,22 @@ export default function App() {
         <Route path="/aprende-sinic" element={<AprendeSINIC />} />
         <Route path="/aprende-uml" element={<AprendeUML />} />
         <Route path="/modelo-datos-sinic" element={<ModeloDatosSINIC />} />
+        <Route path="/modelo" element={<ModeloDatosSINIC />} />
         <Route path="/interesados" element={<Interesados />} />
         <Route
           path="/unidades-administrativas"
           element={<UnidadesAdministrativas />}
         />
         <Route path="/derechos-interesados" element={<DerechosInteresados />} />
+        <Route path="/derechos" element={<DerechosInteresados />} />
         <Route path="/unidades-espaciales" element={<UnidadesEspaciales />} />
         <Route
           path="/topografia-representacion"
           element={<TopografiaRepresentacion />}
         />
+        <Route path="/topografia" element={<TopografiaRepresentacion />} />
         <Route path="/cartografia-catastral" element={<CartografiaCatastral />} />
+        <Route path="/cartografia" element={<CartografiaCatastral />} />
       </Routes>
     </Layout>
   );

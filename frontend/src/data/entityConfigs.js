@@ -1,9 +1,14 @@
 export const entityConfigs = {
   interesados: {
     title: "Interesados",
-    subtitle: "Personas naturales o juridicas relacionadas con predios.",
+    pageTitle: "Gestion de Interesados",
+    subtitle:
+      "Administra los actores vinculados a los predios, como propietarios, poseedores u otras personas naturales o juridicas.",
     endpoint: "/api/interesados",
     idField: "id_interesado",
+    tableName: "ladm_sinic.interesado",
+    infoType: "Informacion juridica y de contacto",
+    accent: "people",
     fields: [
       {
         name: "tipo_interesado",
@@ -21,7 +26,13 @@ export const entityConfigs = {
       { name: "nombre_razon_social", label: "Nombre o razon social" },
       { name: "correo", label: "Correo", type: "email" },
       { name: "telefono", label: "Telefono" },
-      { name: "direccion", label: "Direccion" },
+      { name: "direccion", label: "Direccion", placeholder: "Direccion de notificacion" },
+    ],
+    keyFields: [
+      "tipo_documento",
+      "numero_documento",
+      "nombre_razon_social",
+      "correo",
     ],
     tableColumns: [
       { key: "id_interesado", label: "ID" },
@@ -35,12 +46,17 @@ export const entityConfigs = {
   },
   unidadesAdministrativas: {
     title: "Unidades Administrativas",
-    subtitle: "Informacion predial administrativa, juridica y economica.",
+    pageTitle: "Gestion de Unidades Administrativas",
+    subtitle:
+      "Administra la informacion predial administrativa, economica y de vigencia.",
     endpoint: "/api/unidades-administrativas",
     idField: "id_unidad_administrativa",
+    tableName: "ladm_sinic.unidad_administrativa",
+    infoType: "Informacion predial y economica",
+    accent: "admin",
     fields: [
-      { name: "codigo_predial", label: "Codigo predial" },
-      { name: "matricula_inmobiliaria", label: "Matricula inmobiliaria" },
+      { name: "codigo_predial", label: "Codigo predial", placeholder: "Codigo predial nacional" },
+      { name: "matricula_inmobiliaria", label: "Matricula inmobiliaria", placeholder: "50C-123456" },
       { name: "departamento", label: "Departamento" },
       { name: "municipio", label: "Municipio" },
       { name: "direccion", label: "Direccion" },
@@ -63,6 +79,12 @@ export const entityConfigs = {
         options: ["Vigente", "Retirado", "En revision"],
       },
     ],
+    keyFields: [
+      "codigo_predial",
+      "matricula_inmobiliaria",
+      "municipio",
+      "avaluo_catastral",
+    ],
     tableColumns: [
       { key: "id_unidad_administrativa", label: "ID" },
       { key: "codigo_predial", label: "Codigo predial" },
@@ -77,9 +99,14 @@ export const entityConfigs = {
   },
   derechosInteresados: {
     title: "Derechos Interesados",
-    subtitle: "Relacion entre interesados, predios y derechos registrados.",
+    pageTitle: "Gestion de Derechos Interesados",
+    subtitle:
+      "Administra los vinculos entre interesados, unidades administrativas y derechos registrados.",
     endpoint: "/api/derechos-interesados",
     idField: "id_derecho",
+    tableName: "ladm_sinic.derecho_interesado",
+    infoType: "Relacion juridica entre actor y predio",
+    accent: "rights",
     fields: [
       { name: "id_interesado", label: "ID interesado" },
       { name: "id_unidad_administrativa", label: "ID unidad administrativa" },
@@ -104,6 +131,12 @@ export const entityConfigs = {
         options: ["Vigente", "Cancelado", "En revision"],
       },
     ],
+    keyFields: [
+      "id_interesado",
+      "id_unidad_administrativa",
+      "tipo_derecho",
+      "porcentaje_participacion",
+    ],
     tableColumns: [
       { key: "id_derecho", label: "ID" },
       { key: "id_interesado", label: "Interesado" },
@@ -115,9 +148,15 @@ export const entityConfigs = {
   },
   unidadesEspaciales: {
     title: "Unidades Espaciales",
-    subtitle: "Representacion espacial del predio o unidad territorial.",
+    pageTitle: "Gestion de Unidades Espaciales",
+    subtitle:
+      "Administra la representacion espacial de predios y unidades territoriales en EPSG:9377.",
     endpoint: "/api/unidades-espaciales",
     idField: "id_unidad_espacial",
+    tableName: "ladm_sinic.unidad_espacial",
+    infoType: "Geometria predial principal",
+    accent: "spatial",
+    hasGeometry: true,
     fields: [
       { name: "id_unidad_administrativa", label: "ID unidad administrativa" },
       {
@@ -128,7 +167,15 @@ export const entityConfigs = {
       },
       { name: "etiqueta", label: "Etiqueta" },
       { name: "area_calculada", label: "Area calculada", type: "number" },
-      { name: "geometria", label: "Geometria WKT", type: "textarea" },
+      {
+        name: "geometria",
+        label: "Geometria WKT",
+        type: "textarea",
+        rows: 5,
+        placeholder:
+          "POLYGON((5000000 2000000, 5000010 2000000, 5000010 2000012, 5000000 2000012, 5000000 2000000))",
+        help: "Ingrese WKT en SRID EPSG:9377.",
+      },
       { name: "fecha_inicio_vigencia", label: "Inicio vigencia", type: "date" },
       { name: "fecha_fin_vigencia", label: "Fin vigencia", type: "date" },
       {
@@ -137,6 +184,12 @@ export const entityConfigs = {
         type: "select",
         options: ["Vigente", "Retirado", "En revision"],
       },
+    ],
+    keyFields: [
+      "id_unidad_administrativa",
+      "tipo_unidad_espacial",
+      "area_calculada",
+      "geometria_wkt",
     ],
     tableColumns: [
       { key: "id_unidad_espacial", label: "ID" },
@@ -150,9 +203,15 @@ export const entityConfigs = {
   },
   topografiaRepresentacion: {
     title: "Topografia y Representacion",
-    subtitle: "Elementos capturados para describir la representacion espacial.",
+    pageTitle: "Gestion de Topografia y Representacion",
+    subtitle:
+      "Administra elementos capturados o representados para describir la informacion espacial.",
     endpoint: "/api/topografia-representacion",
     idField: "id_topografia",
+    tableName: "ladm_sinic.topografia_representacion",
+    infoType: "Levantamiento y representacion espacial",
+    accent: "survey",
+    hasGeometry: true,
     fields: [
       { name: "id_unidad_espacial", label: "ID unidad espacial" },
       {
@@ -174,8 +233,21 @@ export const entityConfigs = {
       },
       { name: "fuente_datos", label: "Fuente de datos" },
       { name: "observacion", label: "Observacion", type: "textarea" },
-      { name: "geometria", label: "Geometria WKT", type: "textarea" },
+      {
+        name: "geometria",
+        label: "Geometria WKT",
+        type: "textarea",
+        rows: 5,
+        placeholder: "POINT(5000005 2000005)",
+        help: "Puede usar POINT, LINESTRING o POLYGON en SRID EPSG:9377.",
+      },
       { name: "fecha_levantamiento", label: "Fecha levantamiento", type: "date" },
+    ],
+    keyFields: [
+      "id_unidad_espacial",
+      "tipo_elemento",
+      "metodo_captura",
+      "geometria_wkt",
     ],
     tableColumns: [
       { key: "id_topografia", label: "ID" },
@@ -188,9 +260,15 @@ export const entityConfigs = {
   },
   cartografiaCatastral: {
     title: "Cartografia Catastral",
-    subtitle: "Capas cartograficas auxiliares para contexto catastral.",
+    pageTitle: "Gestion de Cartografia Catastral",
+    subtitle:
+      "Administra capas cartograficas auxiliares que apoyan el contexto catastral.",
     endpoint: "/api/cartografia-catastral",
     idField: "id_cartografia",
+    tableName: "ladm_sinic.cartografia_catastral",
+    infoType: "Capa espacial complementaria",
+    accent: "map",
+    hasGeometry: true,
     fields: [
       {
         name: "tipo_elemento",
@@ -202,8 +280,16 @@ export const entityConfigs = {
       { name: "nombre", label: "Nombre" },
       { name: "fuente", label: "Fuente" },
       { name: "escala", label: "Escala", placeholder: "1:1000" },
-      { name: "geometria", label: "Geometria WKT", type: "textarea" },
+      {
+        name: "geometria",
+        label: "Geometria WKT",
+        type: "textarea",
+        rows: 5,
+        placeholder: "LINESTRING(5000000 2000000, 5000010 2000010)",
+        help: "Registre la geometria en WKT con coordenadas EPSG:9377.",
+      },
     ],
+    keyFields: ["tipo_elemento", "codigo", "nombre", "geometria_wkt"],
     tableColumns: [
       { key: "id_cartografia", label: "ID" },
       { key: "tipo_elemento", label: "Tipo" },
@@ -220,31 +306,43 @@ export const entityLinks = [
   {
     to: "/interesados",
     label: "Interesados",
+    tableName: "ladm_sinic.interesado",
     description: "Titulares, poseedores u otros actores del catastro.",
+    fields: ["tipo_documento", "numero_documento", "nombre_razon_social"],
   },
   {
     to: "/unidades-administrativas",
     label: "Unidades Administrativas",
+    tableName: "ladm_sinic.unidad_administrativa",
     description: "Datos administrativos y economicos del predio.",
+    fields: ["codigo_predial", "matricula_inmobiliaria", "avaluo_catastral"],
   },
   {
     to: "/derechos-interesados",
     label: "Derechos Interesados",
+    tableName: "ladm_sinic.derecho_interesado",
     description: "Vinculos entre personas, predios y derechos.",
+    fields: ["id_interesado", "tipo_derecho", "porcentaje_participacion"],
   },
   {
     to: "/unidades-espaciales",
     label: "Unidades Espaciales",
+    tableName: "ladm_sinic.unidad_espacial",
     description: "Geometrias prediales en EPSG:9377.",
+    fields: ["tipo_unidad_espacial", "area_calculada", "geometria"],
   },
   {
     to: "/topografia-representacion",
     label: "Topografia y Representacion",
+    tableName: "ladm_sinic.topografia_representacion",
     description: "Elementos espaciales de levantamiento.",
+    fields: ["tipo_elemento", "metodo_captura", "geometria"],
   },
   {
     to: "/cartografia-catastral",
     label: "Cartografia Catastral",
+    tableName: "ladm_sinic.cartografia_catastral",
     description: "Capas y elementos cartograficos de apoyo.",
+    fields: ["tipo_elemento", "codigo", "geometria"],
   },
 ];
