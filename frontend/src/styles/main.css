@@ -477,9 +477,12 @@ textarea:focus-visible {
 .comparison-card,
 .concept-map,
 .technical-card,
+.relationship-card,
 .uml-node,
 .detail-panel,
 .process-card,
+.relation-node,
+.concept-node,
 .support-layer {
   min-width: 0;
   background: rgba(255, 255, 255, 0.96);
@@ -798,6 +801,7 @@ textarea:focus-visible {
 .diagram-section,
 .comparison-card,
 .concept-map,
+.relationship-card,
 .technical-card {
   padding: 22px;
 }
@@ -946,40 +950,114 @@ textarea:focus-visible {
   word-break: break-word;
 }
 
-.concept-flow {
+.concept-diagram,
+.relationship-diagram {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(5, minmax(150px, 1fr));
+  gap: 16px;
   margin-top: 16px;
 }
 
-.concept-step,
-.support-layer {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px;
+.concept-node,
+.relation-node {
+  position: relative;
+  display: grid;
+  gap: 7px;
+  align-content: start;
+  min-height: 132px;
+  padding: 16px;
   color: var(--color-primary);
-  background: #ffffff;
+  background:
+    linear-gradient(180deg, #ffffff, #f7fbfd);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  font-weight: 850;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
 }
 
-.concept-step span {
-  margin-left: auto;
+.concept-node svg,
+.relation-node svg {
   color: var(--color-secondary);
+}
+
+.concept-node span,
+.relation-node span {
+  color: var(--color-muted);
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.concept-node strong,
+.relation-node strong {
+  color: var(--color-primary);
+  font-size: 0.98rem;
+  line-height: 1.25;
+}
+
+.concept-node small,
+.relation-node small {
+  color: var(--color-muted);
+  font-family:
+    "Cascadia Mono",
+    Consolas,
+    monospace;
+  font-size: 0.76rem;
+  line-height: 1.35;
+}
+
+.concept-connector,
+.relation-connector {
+  position: absolute;
+  top: 50%;
+  right: -15px;
+  z-index: 2;
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  background: var(--color-secondary);
+  border: 3px solid #ffffff;
+  border-radius: 999px;
+  box-shadow: var(--shadow-soft);
+  transform: translateY(-50%);
+}
+
+.support-layer,
+.support-diagram {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  color: var(--color-primary);
+  background: var(--color-warning-soft);
+  border: 1px solid rgba(183, 121, 31, 0.22);
+  border-radius: var(--radius-md);
 }
 
 .support-layer {
   margin-top: 12px;
-  background: var(--color-warning-soft);
 }
 
-.support-layer p {
+.support-layer p,
+.support-diagram p {
   margin: 4px 0 0;
   color: var(--color-muted);
   font-weight: 500;
+}
+
+.relationship-card {
+  display: grid;
+  gap: 16px;
+}
+
+.relationship-diagram {
+  margin-top: 0;
+}
+
+.support-diagram {
+  background: linear-gradient(135deg, var(--color-warning-soft), #ffffff);
 }
 
 .technical-card {
@@ -1259,7 +1337,8 @@ textarea:focus-visible {
 @media (max-width: 1180px) {
   .quick-actions,
   .timeline,
-  .concept-flow {
+  .concept-diagram,
+  .relationship-diagram {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
@@ -1301,9 +1380,15 @@ textarea:focus-visible {
   .model-grid,
   .quick-actions,
   .timeline,
-  .concept-flow,
+  .concept-diagram,
+  .relationship-diagram,
   .technical-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .concept-connector,
+  .relation-connector {
+    display: none;
   }
 
   .navbar {
@@ -1350,7 +1435,8 @@ textarea:focus-visible {
   .quick-actions,
   .architecture-flow,
   .timeline,
-  .concept-flow,
+  .concept-diagram,
+  .relationship-diagram,
   .process-grid,
   .technical-grid,
   .uml-class-grid,

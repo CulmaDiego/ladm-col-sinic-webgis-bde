@@ -122,6 +122,34 @@ const comparisonRows = [
   ["Objeto espacial", "Geometria PostGIS", "geometria"],
 ];
 
+const relationFlow = [
+  {
+    name: "Interesado",
+    label: "Actor catastral",
+    table: "interesado",
+  },
+  {
+    name: "DerechoInteresado",
+    label: "Tabla puente",
+    table: "derecho_interesado",
+  },
+  {
+    name: "UnidadAdministrativa",
+    label: "Predio administrativo",
+    table: "unidad_administrativa",
+  },
+  {
+    name: "UnidadEspacial",
+    label: "Geometria predial",
+    table: "unidad_espacial",
+  },
+  {
+    name: "TopografiaRepresentacion",
+    label: "Detalle espacial",
+    table: "topografia_representacion",
+  },
+];
+
 export default function AprendeUML() {
   const [selectedClass, setSelectedClass] = useState("Interesado");
   const currentClass = useMemo(
@@ -267,17 +295,42 @@ export default function AprendeUML() {
         </div>
       </div>
 
-      <section className="detail-band">
-        <GitBranch size={28} aria-hidden="true" />
-        <div>
-          <h2>Relaciones visuales del modelo</h2>
-          <p>
-            Interesado se relaciona con UnidadAdministrativa mediante
-            DerechoInteresado. UnidadAdministrativa se conecta con
-            UnidadEspacial. UnidadEspacial puede relacionarse con
-            TopografiaRepresentacion, mientras CartografiaCatastral funciona
-            como soporte espacial complementario.
-          </p>
+      <section className="relationship-card">
+        <div className="section-heading">
+          <div>
+            <h2>Relaciones visuales del modelo</h2>
+            <p>
+              El flujo muestra como el actor catastral llega hasta la geometria
+              y sus elementos de representacion.
+            </p>
+          </div>
+        </div>
+
+        <div className="relationship-diagram" aria-label="Relaciones UML del modelo">
+          {relationFlow.map((item, index) => (
+            <article className="relation-node" key={item.name}>
+              <GitBranch size={20} aria-hidden="true" />
+              <span>{item.label}</span>
+              <strong>{item.name}</strong>
+              <small>{item.table}</small>
+              {index < relationFlow.length - 1 && (
+                <b aria-hidden="true" className="relation-connector">
+                  -&gt;
+                </b>
+              )}
+            </article>
+          ))}
+        </div>
+
+        <div className="support-diagram">
+          <Database size={22} aria-hidden="true" />
+          <div>
+            <strong>CartografiaCatastral</strong>
+            <p>
+              Capa complementaria: no reemplaza la relacion juridica, pero
+              aporta contexto espacial para consulta y control cartografico.
+            </p>
+          </div>
         </div>
       </section>
     </section>

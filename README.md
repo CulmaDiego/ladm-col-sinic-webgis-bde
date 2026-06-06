@@ -219,22 +219,14 @@ Restaurar backup:
 pg_restore -U postgres -h localhost -p 5432 -d bde_ladm_sinic -v backup/bde_ladm_sinic.backup
 ```
 
-## Subir a GitHub
+## Repositorio
 
-```bash
-git init
-git add .
-git commit -m "Proyecto inicial LADM COL SINIC"
-git branch -M main
-git remote add origin URL_DEL_REPOSITORIO
-git push -u origin main
-```
+Repositorio del proyecto para revision:
 
-En este repositorio el remoto configurado es:
+- https://github.com/CulmaDiego/ladm-col-sinic-webgis-bde.git
 
-```text
-https://github.com/CulmaDiego/ladm-col-sinic-webgis-bde.git
-```
+La rama principal es `main`. El repositorio incluye codigo fuente, scripts SQL,
+documentacion, archivos `.env.example` y archivos de bloqueo de dependencias.
 
 ## Notas importantes
 

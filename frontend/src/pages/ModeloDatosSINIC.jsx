@@ -35,11 +35,31 @@ const technicalItems = [
 ];
 
 const conceptFlow = [
-  "Interesado",
-  "DerechoInteresado",
-  "UnidadAdministrativa",
-  "UnidadEspacial",
-  "TopografiaRepresentacion",
+  {
+    title: "Interesado",
+    subtitle: "Persona o entidad",
+    table: "interesado",
+  },
+  {
+    title: "DerechoInteresado",
+    subtitle: "Vinculo juridico",
+    table: "derecho_interesado",
+  },
+  {
+    title: "UnidadAdministrativa",
+    subtitle: "Predio administrativo",
+    table: "unidad_administrativa",
+  },
+  {
+    title: "UnidadEspacial",
+    subtitle: "Geometria del predio",
+    table: "unidad_espacial",
+  },
+  {
+    title: "TopografiaRepresentacion",
+    subtitle: "Detalle capturado",
+    table: "topografia_representacion",
+  },
 ];
 
 export default function ModeloDatosSINIC() {
@@ -89,13 +109,17 @@ export default function ModeloDatosSINIC() {
             </p>
           </div>
         </div>
-        <div className="concept-flow">
+        <div className="concept-diagram" aria-label="Mapa conceptual SINIC">
           {conceptFlow.map((item, index) => (
-            <article className="concept-step" key={item}>
+            <article className="concept-node" key={item.title}>
               <GitBranch size={20} aria-hidden="true" />
-              <strong>{item}</strong>
+              <span>{item.subtitle}</span>
+              <strong>{item.title}</strong>
+              <small>{item.table}</small>
               {index < conceptFlow.length - 1 && (
-                <span aria-hidden="true">-&gt;</span>
+                <b aria-hidden="true" className="concept-connector">
+                  -&gt;
+                </b>
               )}
             </article>
           ))}
