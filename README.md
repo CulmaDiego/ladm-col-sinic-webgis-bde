@@ -21,6 +21,20 @@ La base de datos objetivo es:
 
 El proyecto usa PostgreSQL + PostGIS normal. No usa `postgis_topology`.
 
+## Cumplimiento de entregables
+
+- Aplicacion web con frontend React + Vite y backend FastAPI.
+- Seccion **Aprende SINIC** con explicacion de Resolucion 301, articulo de
+  definiciones, estandares ISO 19152 LADM, INTERLIS y formato XTF.
+- Seccion **Aprende UML** con explicacion de UML, clases, atributos y diagrama
+  visual del modelo.
+- Seccion **Modelo de Datos SINIC** con resumen de entidades y acceso a CRUD.
+- CRUD completo para Unidad Administrativa, Unidad Espacial, Interesados,
+  Derechos Interesados, Topografia y Representacion, y Cartografia Catastral.
+- Base de datos espacial PostgreSQL + PostGIS con geometrias en `EPSG:9377`,
+  estructurada como modelo academico basado en LADM_COL SINIC V1.0.
+- Backup y restore desde la interfaz web usando archivos `.backup`.
+
 ## Estructura
 
 ```text
@@ -68,6 +82,8 @@ ladm-col-sinic-webgis-bde/
 - Node.js
 - npm
 - Git
+- Herramientas de PostgreSQL disponibles en PATH (`pg_dump` y `pg_restore`) o
+  ruta configurada en `PG_BIN_DIR`.
 
 ## Configuracion de base de datos
 
@@ -103,6 +119,13 @@ cd backend
 py -m pipenv install
 Copy-Item .env.example .env
 py -m pipenv run uvicorn app.main:app --reload
+```
+
+Si `pg_dump` o `pg_restore` no se reconocen en Windows, define `PG_BIN_DIR` en
+`backend/.env` con la carpeta `bin` de PostgreSQL. Ejemplo:
+
+```env
+PG_BIN_DIR=C:\Program Files\PostgreSQL\16\bin
 ```
 
 Si `pipenv` esta disponible directamente en tu terminal, tambien puedes usar:
@@ -177,6 +200,8 @@ npm run build
   LADM_COL SINIC, INTERLIS y XTF.
 - **Aprende UML:** conceptos de clase, atributo, relacion y diagrama de clases.
 - **Modelo de Datos SINIC:** descripcion de entidades y botones hacia cada CRUD.
+- **Backup y restore:** botones en Inicio para descargar o restaurar datos de la
+  base de datos en formato `.backup`.
 
 ## CRUD implementados
 
@@ -189,6 +214,8 @@ editar y eliminar para:
 - Unidades espaciales: `/api/unidades-espaciales`
 - Topografia y representacion: `/api/topografia-representacion`
 - Cartografia catastral: `/api/cartografia-catastral`
+- Backup de datos: `/api/backup`
+- Restore de datos: `/api/backup/restore`
 
 Las tablas con geometria aceptan WKT o GeoJSON simple en el campo `geometria`.
 Las respuestas devuelven `geometria_wkt` y `geometria_geojson`.
@@ -207,16 +234,25 @@ POINT(5000005 2000005)
 
 ## Backup
 
-Generar backup:
+Desde el frontend, en **Inicio**, usa:
+
+- **Descargar backup:** genera un archivo `.backup` con los datos de los schemas
+  del proyecto.
+- **Restaurar backup:** carga un `.backup` generado por la aplicacion y reemplaza
+  los datos actuales de las tablas del proyecto.
+
+Los archivos `.backup` no se suben al repositorio. Quedan ignorados por Git.
+
+Generar backup manual:
 
 ```bash
-pg_dump -U postgres -h localhost -p 5432 -d bde_ladm_sinic -F c -b -v -f backup/bde_ladm_sinic.backup
+pg_dump -U sinic_app -h localhost -p 5432 -d bde_ladm_sinic -F c --data-only --schema ladm_sinic --schema catalogos --schema auditoria -f backup/bde_ladm_sinic.backup
 ```
 
-Restaurar backup:
+Restaurar backup manual:
 
 ```bash
-pg_restore -U postgres -h localhost -p 5432 -d bde_ladm_sinic -v backup/bde_ladm_sinic.backup
+pg_restore -U sinic_app -h localhost -p 5432 -d bde_ladm_sinic --data-only --no-owner --no-privileges --single-transaction backup/bde_ladm_sinic.backup
 ```
 
 ## Repositorio

@@ -10,6 +10,8 @@ class Settings(BaseSettings):
     backend_host: str = "127.0.0.1"
     backend_port: int = 8000
     frontend_url: str = "http://localhost:5173"
+    pg_bin_dir: str | None = None
+    backup_timeout_seconds: int = 180
 
     model_config = SettingsConfigDict(
         env_file=".env",

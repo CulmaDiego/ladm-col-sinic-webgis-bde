@@ -398,6 +398,11 @@ textarea:focus-visible {
   background: var(--color-danger-soft);
 }
 
+.notice.warning {
+  color: var(--color-warning);
+  background: var(--color-warning-soft);
+}
+
 .notice {
   width: 100%;
   padding: 13px 15px;
@@ -433,6 +438,14 @@ textarea:focus-visible {
 .button:hover,
 .icon-button:hover {
   transform: translateY(-1px);
+}
+
+.btn:disabled,
+.button:disabled,
+.icon-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+  transform: none;
 }
 
 .btn-primary,
@@ -478,6 +491,7 @@ textarea:focus-visible {
 .concept-map,
 .technical-card,
 .relationship-card,
+.backup-panel,
 .uml-node,
 .detail-panel,
 .process-card,
@@ -802,8 +816,38 @@ textarea:focus-visible {
 .comparison-card,
 .concept-map,
 .relationship-card,
-.technical-card {
+.technical-card,
+.backup-panel {
   padding: 22px;
+}
+
+.backup-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+}
+
+.backup-panel h2 {
+  margin: 4px 0 8px;
+  color: var(--color-primary);
+}
+
+.backup-panel p {
+  margin: 0;
+  color: var(--color-muted);
+  line-height: 1.55;
+}
+
+.backup-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.backup-panel .notice {
+  grid-column: 1 / -1;
 }
 
 .uml-interactive {
@@ -1188,6 +1232,18 @@ textarea:focus-visible {
   outline: none;
 }
 
+.form-field.has-error input,
+.form-field.has-error select,
+.form-field.has-error textarea {
+  border-color: var(--color-danger);
+  box-shadow: 0 0 0 4px rgba(192, 57, 43, 0.1);
+}
+
+.form-field .field-error {
+  color: var(--color-danger);
+  font-weight: 800;
+}
+
 .geometry-help {
   display: flex;
   gap: 12px;
@@ -1367,12 +1423,14 @@ textarea:focus-visible {
   .hero-grid,
   .compact-hero,
   .detail-band,
-  .uml-interactive {
+  .uml-interactive,
+  .backup-panel {
     grid-template-columns: 1fr;
   }
 
   .compact-hero,
-  .detail-band {
+  .detail-band,
+  .backup-panel {
     display: grid;
   }
 
@@ -1422,6 +1480,7 @@ textarea:focus-visible {
   .comparison-card,
   .concept-map,
   .technical-card,
+  .backup-panel,
   .form-card,
   .table-panel {
     padding: 18px;
@@ -1450,6 +1509,10 @@ textarea:focus-visible {
   }
 
   .search-box {
+    width: 100%;
+  }
+
+  .backup-actions {
     width: 100%;
   }
 

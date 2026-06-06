@@ -108,8 +108,30 @@ export const entityConfigs = {
     infoType: "Relacion juridica entre actor y predio",
     accent: "rights",
     fields: [
-      { name: "id_interesado", label: "ID interesado" },
-      { name: "id_unidad_administrativa", label: "ID unidad administrativa" },
+      {
+        name: "id_interesado",
+        label: "Interesado",
+        placeholder: "Seleccionar interesado",
+        validation: "uuid",
+        relation: {
+          endpoint: "/api/interesados",
+          valueField: "id_interesado",
+          labelFields: ["nombre_razon_social", "tipo_documento", "numero_documento"],
+        },
+        help: "Seleccione un interesado existente para evitar IDs incompletos.",
+      },
+      {
+        name: "id_unidad_administrativa",
+        label: "Unidad administrativa",
+        placeholder: "Seleccionar unidad administrativa",
+        validation: "uuid",
+        relation: {
+          endpoint: "/api/unidades-administrativas",
+          valueField: "id_unidad_administrativa",
+          labelFields: ["codigo_predial", "matricula_inmobiliaria", "municipio"],
+        },
+        help: "Seleccione el predio administrativo que se vincula al derecho.",
+      },
       {
         name: "tipo_derecho",
         label: "Tipo de derecho",
@@ -158,7 +180,18 @@ export const entityConfigs = {
     accent: "spatial",
     hasGeometry: true,
     fields: [
-      { name: "id_unidad_administrativa", label: "ID unidad administrativa" },
+      {
+        name: "id_unidad_administrativa",
+        label: "Unidad administrativa",
+        placeholder: "Seleccionar unidad administrativa",
+        validation: "uuid",
+        relation: {
+          endpoint: "/api/unidades-administrativas",
+          valueField: "id_unidad_administrativa",
+          labelFields: ["codigo_predial", "matricula_inmobiliaria", "municipio"],
+        },
+        help: "Seleccione el predio al que pertenece la unidad espacial.",
+      },
       {
         name: "tipo_unidad_espacial",
         label: "Tipo unidad espacial",
@@ -213,7 +246,18 @@ export const entityConfigs = {
     accent: "survey",
     hasGeometry: true,
     fields: [
-      { name: "id_unidad_espacial", label: "ID unidad espacial" },
+      {
+        name: "id_unidad_espacial",
+        label: "Unidad espacial",
+        placeholder: "Seleccionar unidad espacial",
+        validation: "uuid",
+        relation: {
+          endpoint: "/api/unidades-espaciales",
+          valueField: "id_unidad_espacial",
+          labelFields: ["etiqueta", "tipo_unidad_espacial", "estado"],
+        },
+        help: "Seleccione la geometria base a la que pertenece el elemento.",
+      },
       {
         name: "tipo_elemento",
         label: "Tipo de elemento",

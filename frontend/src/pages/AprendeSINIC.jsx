@@ -44,6 +44,68 @@ const sinicCards = [
   },
 ];
 
+const definitionCards = [
+  {
+    title: "Gestor catastral",
+    text: "Entidad responsable de formar, actualizar, conservar y difundir informacion catastral dentro de su competencia.",
+  },
+  {
+    title: "Informacion catastral",
+    text: "Conjunto de datos fisicos, juridicos, economicos y espaciales que describen los predios.",
+  },
+  {
+    title: "Modelo de aplicacion",
+    text: "Estructura que indica clases, atributos, relaciones y reglas para organizar datos antes de reportarlos.",
+  },
+  {
+    title: "Reporte al SINIC",
+    text: "Entrega estandarizada de datos para que la informacion sea comparable, validable y reutilizable.",
+  },
+];
+
+const isoStandards = [
+  {
+    code: "ISO 19152-1:2024",
+    title: "Modelo conceptual general",
+    text: "Define la base comun del LADM: partes, derechos, responsabilidades, restricciones y objetos espaciales.",
+  },
+  {
+    code: "ISO 19152-2:2025",
+    title: "Registro de tierras",
+    text: "Organiza informacion juridica y administrativa relacionada con titulares, derechos y predios.",
+  },
+  {
+    code: "ISO 19152-3:2024",
+    title: "Regulacion marina",
+    text: "Extiende el enfoque LADM para representar derechos, restricciones y responsabilidades en espacios marinos.",
+  },
+  {
+    code: "ISO 19152-4:2025",
+    title: "Valoracion",
+    text: "Apoya informacion economica para procesos de valoracion, avaluos y analisis fiscal del territorio.",
+  },
+  {
+    code: "ISO 19152-5:2025",
+    title: "Planeacion espacial",
+    text: "Relaciona informacion de ordenamiento, planeacion y regulacion territorial con objetos espaciales.",
+  },
+];
+
+const interlisConcepts = [
+  {
+    title: "INTERLIS",
+    text: "Lenguaje de modelado e intercambio que describe datos geograficos con reglas formales, dominios, clases y asociaciones.",
+  },
+  {
+    title: "XTF",
+    text: "Archivo de transferencia XML usado por INTERLIS para entregar datos conforme al modelo definido.",
+  },
+  {
+    title: "Validacion",
+    text: "Permite revisar estructura, tipos de datos, relaciones y cumplimiento antes de cargar o reportar informacion.",
+  },
+];
+
 const processSteps = [
   "Captura de datos",
   "Estructuracion bajo modelo",
@@ -88,6 +150,71 @@ export default function AprendeSINIC() {
           );
         })}
       </div>
+
+      <section className="comparison-card">
+        <div className="section-heading">
+          <div>
+            <h2>Resolucion 301 y articulo de definiciones</h2>
+            <p>
+              En el proyecto se resume como marco para entender que informacion
+              se reporta, quien la gestiona y por que debe estar
+              estandarizada.
+            </p>
+          </div>
+        </div>
+        <div className="card-grid compact-learning">
+          {definitionCards.map((item) => (
+            <article className="info-card" key={item.title}>
+              <FileText size={24} aria-hidden="true" />
+              <h2>{item.title}</h2>
+              <p>{item.text}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="comparison-card">
+        <div className="section-heading">
+          <div>
+            <h2>Estandares ISO 19152 LADM</h2>
+            <p>
+              Estas partes explican como organizar informacion de administracion
+              del territorio de forma interoperable.
+            </p>
+          </div>
+        </div>
+        <div className="card-grid compact-learning">
+          {isoStandards.map((item) => (
+            <article className="info-card" key={item.code}>
+              <Layers3 size={24} aria-hidden="true" />
+              <span className="table-name">{item.code}</span>
+              <h2>{item.title}</h2>
+              <p>{item.text}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="comparison-card">
+        <div className="section-heading">
+          <div>
+            <h2>INTERLIS y formato XTF</h2>
+            <p>
+              Sirven para describir, validar e intercambiar datos geograficos
+              siguiendo un modelo formal.
+            </p>
+          </div>
+        </div>
+        <div className="card-grid compact-learning">
+          {interlisConcepts.map((item) => (
+            <article className="info-card" key={item.title}>
+              <FileCode2 size={24} aria-hidden="true" />
+              <h2>{item.title}</h2>
+              <p>{item.text}</p>
+            </article>
+          ))}
+        </div>
+      </section>
 
       <section className="detail-band">
         <div>

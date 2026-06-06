@@ -1,4 +1,4 @@
-export default function FormField({ field, value, onChange }) {
+export default function FormField({ field, value, onChange, error, options }) {
   const commonProps = {
     id: field.name,
     name: field.name,
@@ -6,21 +6,28 @@ export default function FormField({ field, value, onChange }) {
     onChange,
     placeholder: field.placeholder || "",
   };
+  const optionItems = options || field.options || [];
+  const shouldRenderSelect = field.type === "select" || field.relation;
 
   return (
     <label
-      className={`form-field ${field.type === "textarea" ? "span-wide" : ""}`}
+      className={`form-field ${field.type === "textarea" ? "span-wide" : ""} ${
+        error ? "has-error" : ""
+      }`}
       htmlFor={field.name}
     >
       <span>{field.label}</span>
       {field.type === "textarea" ? (
         <textarea {...commonProps} rows={field.rows || 4} />
-      ) : field.type === "select" ? (
+      ) : shouldRenderSelect ? (
         <select {...commonProps}>
-          <option value="">Seleccionar</option>
-          {field.options?.map((option) => (
-            <option key={option} value={option}>
-              {option}
+          <option value="">{field.placeholder || "Seleccionar"}</option>
+          {optionItems.map((option) => (
+            <option
+              key={typeof option === "string" ? option : option.value}
+              value={typeof option === "string" ? option : option.value}
+            >
+              {typeof option === "string" ? option : option.label}
             </option>
           ))}
         </select>
@@ -32,6 +39,7 @@ export default function FormField({ field, value, onChange }) {
         />
       )}
       {field.help && <small>{field.help}</small>}
+      {error && <small className="field-error">{error}</small>}
     </label>
   );
 }

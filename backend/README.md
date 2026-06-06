@@ -8,6 +8,7 @@ Backend academico para el proyecto `ladm-col-sinic-webgis-bde`.
 - Pipenv
 - PostgreSQL con PostGIS
 - Base de datos `bde_ladm_sinic`
+- `pg_dump` y `pg_restore` disponibles en PATH o configurados con `PG_BIN_DIR`
 
 ## Configuracion
 
@@ -17,6 +18,12 @@ Comandos recomendados en Windows PowerShell:
 cd backend
 py -m pipenv install
 Copy-Item .env.example .env
+```
+
+Si PostgreSQL no esta en el PATH de Windows, edita `.env` y define:
+
+```env
+PG_BIN_DIR=C:\Program Files\PostgreSQL\16\bin
 ```
 
 Si `pipenv` esta disponible directamente en tu terminal, tambien puedes usar:
@@ -64,6 +71,17 @@ Invoke-WebRequest -Uri "http://127.0.0.1:8000/health" -UseBasicParsing
 - `/api/unidades-espaciales`
 - `/api/topografia-representacion`
 - `/api/cartografia-catastral`
+- `/api/backup`
+- `/api/backup/restore`
 
 Las entidades espaciales aceptan geometria como WKT o GeoJSON simple y devuelven
 `geometria_wkt` y `geometria_geojson` usando funciones PostGIS.
+
+## Backup y restore
+
+- `GET /api/backup` genera y descarga un `.backup` con datos de los schemas del
+  proyecto.
+- `POST /api/backup/restore` recibe un archivo `.backup` y reemplaza los datos
+  actuales de las tablas del proyecto.
+
+Los archivos `.backup` estan ignorados por Git.

@@ -12,6 +12,7 @@ psycopg2-binary = "*"
 python-dotenv = "*"
 pydantic = "*"
 pydantic-settings = "*"
+python-multipart = "*"
 
 [dev-packages]
 

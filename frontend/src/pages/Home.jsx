@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { api, API_URL } from "../api/api.js";
+import BackupControls from "../components/BackupControls.jsx";
 
 const quickCards = [
   {
@@ -146,6 +147,8 @@ export default function Home() {
           </div>
         </article>
       </div>
+
+      <BackupControls />
 
       <div className="section-heading">
         <div>

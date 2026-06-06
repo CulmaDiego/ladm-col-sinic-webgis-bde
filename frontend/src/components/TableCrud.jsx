@@ -18,6 +18,9 @@ import { useEffect, useMemo, useState } from "react";
 import { api } from "../api/api.js";
 import FormField from "./FormField.jsx";
 
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 function buildInitialForm(fields) {
   return fields.reduce((values, field) => {
     values[field.name] = "";
@@ -40,10 +43,30 @@ function normalizePayload(values, fields) {
   }, {});
 }
 
-function getErrorMessage(error) {
+function getFieldLabel(config, fieldName) {
+  return (
+    config.fields.find((field) => field.name === fieldName)?.label || fieldName
+  );
+}
+
+function getErrorMessage(error, config) {
   const detail = error.response?.data?.detail;
   if (typeof detail === "string") {
     return detail;
+  }
+  if (Array.isArray(detail)) {
+    return detail
+      .map((item) => {
+        const fieldName = item.loc?.[item.loc.length - 1] || "campo";
+        const label = getFieldLabel(config, fieldName);
+
+        if (String(item.type || "").includes("uuid")) {
+          return `${label}: selecciona un registro valido de la lista. No uses valores cortos como 1 o 12.`;
+        }
+
+        return `${label}: ${item.msg}`;
+      })
+      .join(" ");
   }
   if (detail) {
     return JSON.stringify(detail);
@@ -61,6 +84,43 @@ function displayValue(value) {
   return String(value);
 }
 
+function getRelationLabel(row, relation) {
+  const labelParts = relation.labelFields
+    ?.map((field) => row[field])
+    .filter((value) => value !== null && value !== undefined && value !== "");
+  const baseLabel = labelParts?.length
+    ? labelParts.join(" - ")
+    : row[relation.valueField];
+  const idValue = String(row[relation.valueField] || "");
+  const shortId = idValue ? ` (${idValue.slice(0, 8)})` : "";
+
+  return `${baseLabel}${shortId}`;
+}
+
+function validateForm(values, fields) {
+  return fields.reduce((errors, field) => {
+    const value = String(values[field.name] || "").trim();
+
+    if (field.validation === "uuid" && value && !UUID_PATTERN.test(value)) {
+      errors[field.name] =
+        "Debe ser un UUID valido. Selecciona un registro de la lista, no escribas un numero corto.";
+    }
+
+    if (
+      field.name === "geometria" &&
+      value &&
+      !/^(POINT|LINESTRING|POLYGON|MULTIPOINT|MULTILINESTRING|MULTIPOLYGON)\s*\(/i.test(
+        value,
+      )
+    ) {
+      errors[field.name] =
+        "La geometria debe estar en WKT, por ejemplo POINT(...) o POLYGON(...).";
+    }
+
+    return errors;
+  }, {});
+}
+
 export default function TableCrud({ config }) {
   const initialForm = useMemo(() => buildInitialForm(config.fields), [config]);
   const [rows, setRows] = useState([]);
@@ -69,6 +129,8 @@ export default function TableCrud({ config }) {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [referenceOptions, setReferenceOptions] = useState({});
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const filteredRows = useMemo(() => {
     const normalizedTerm = searchTerm.trim().toLowerCase();
@@ -103,30 +165,78 @@ export default function TableCrud({ config }) {
         setMessage(null);
       }
     } catch (error) {
-      setMessage({ type: "error", text: getErrorMessage(error) });
+      setMessage({ type: "error", text: getErrorMessage(error, config) });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadReferences = async () => {
+    const relationFields = config.fields.filter((field) => field.relation);
+
+    if (relationFields.length === 0) {
+      setReferenceOptions({});
+      return;
+    }
+
+    try {
+      const references = await Promise.all(
+        relationFields.map(async (field) => {
+          const response = await api.get(field.relation.endpoint);
+          const options = response.data.map((row) => ({
+            value: row[field.relation.valueField],
+            label: getRelationLabel(row, field.relation),
+          }));
+
+          return [field.name, options];
+        }),
+      );
+
+      setReferenceOptions(Object.fromEntries(references));
+    } catch (error) {
+      setMessage({
+        type: "error",
+        text: `No fue posible cargar las listas relacionadas: ${getErrorMessage(
+          error,
+          config,
+        )}`,
+      });
     }
   };
 
   useEffect(() => {
     setForm(initialForm);
     setEditingId(null);
+    setFieldErrors({});
     loadRows();
+    loadReferences();
   }, [initialForm]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
     setForm((current) => ({ ...current, [name]: value }));
+    setFieldErrors((current) => ({ ...current, [name]: undefined }));
   };
 
   const resetForm = () => {
     setForm(initialForm);
     setEditingId(null);
+    setFieldErrors({});
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    const validationErrors = validateForm(form, config.fields);
+
+    if (Object.keys(validationErrors).length > 0) {
+      setFieldErrors(validationErrors);
+      setMessage({
+        type: "warning",
+        text: "Revisa los campos marcados antes de guardar el registro.",
+      });
+      return;
+    }
+
     const payload = normalizePayload(form, config.fields);
 
     try {
@@ -139,8 +249,9 @@ export default function TableCrud({ config }) {
       }
       resetForm();
       await loadRows({ preserveMessage: true });
+      await loadReferences();
     } catch (error) {
-      setMessage({ type: "error", text: getErrorMessage(error) });
+      setMessage({ type: "error", text: getErrorMessage(error, config) });
     }
   };
 
@@ -153,6 +264,7 @@ export default function TableCrud({ config }) {
     }, {});
     setForm(values);
     setEditingId(row[config.idField]);
+    setFieldErrors({});
     setMessage({ type: "success", text: "Registro cargado para edicion." });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -168,8 +280,9 @@ export default function TableCrud({ config }) {
       await api.delete(`${config.endpoint}/${id}`);
       setMessage({ type: "success", text: "Registro eliminado." });
       await loadRows({ preserveMessage: true });
+      await loadReferences();
     } catch (error) {
-      setMessage({ type: "error", text: getErrorMessage(error) });
+      setMessage({ type: "error", text: getErrorMessage(error, config) });
     }
   };
 
@@ -254,6 +367,8 @@ export default function TableCrud({ config }) {
                 field={field}
                 value={form[field.name]}
                 onChange={handleChange}
+                error={fieldErrors[field.name]}
+                options={referenceOptions[field.name]}
               />
             ))}
           </div>
