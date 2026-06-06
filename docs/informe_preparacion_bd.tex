@@ -1,0 +1,45 @@
+\documentclass[12pt]{article}
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+
+\title{Informe de preparacion de base de datos espacial}
+\author{Proyecto LADM\_COL SINIC WebGIS BDE}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Objetivo}
+Preparar una base de datos espacial PostgreSQL/PostGIS para gestionar datos
+catastrales de forma academica, tomando como referencia el enfoque
+LADM\_COL SINIC V1.0.
+
+\section{Base de datos}
+La base se denomina \texttt{bde\_ladm\_sinic}. Se usan las extensiones
+\texttt{postgis} y \texttt{pgcrypto}. No se usa \texttt{postgis\_topology}.
+
+\section{Schemas}
+La organizacion logica se realiza con los schemas \texttt{ladm\_sinic},
+\texttt{catalogos} y \texttt{auditoria}. Las tablas principales del proyecto se
+ubican en \texttt{ladm\_sinic}.
+
+\section{Tablas principales}
+Se implementan las tablas \texttt{interesado},
+\texttt{unidad\_administrativa}, \texttt{derecho\_interesado},
+\texttt{unidad\_espacial}, \texttt{topografia\_representacion} y
+\texttt{cartografia\_catastral}.
+
+\section{Componente espacial}
+Las tablas \texttt{unidad\_espacial}, \texttt{topografia\_representacion} y
+\texttt{cartografia\_catastral} incluyen campos de geometria PostGIS con SRID
+EPSG:9377. Se crean indices GIST para mejorar consultas espaciales.
+
+\section{Carga de datos}
+El script de datos de prueba inserta registros suficientes para validar los
+CRUD del backend y la visualizacion tabular del frontend.
+
+\end{document}
